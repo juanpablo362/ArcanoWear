@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="arcano_red">#FFC40812</color>
+    <color name="arcano_background">#FF0C0C0F</color>
+    <color name="arcano_surface">#FF1C1C1E</color>
+    <color name="arcano_surface_alt">#FF2A2A2E</color>
+    <color name="arcano_gray">#FF8E8E93</color>
+    <color name="arcano_gray_dark">#FF3A3A3C</color>
+    <color name="arcano_green">#FF34C759</color>
+    <color name="arcano_divider">#FF2C2C2E</color>
+</resources>
