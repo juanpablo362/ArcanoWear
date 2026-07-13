@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="arcano_red">#FFC40812</color>
+    <color name="arcano_bg">#FFF6F7F9</color>
+    <color name="arcano_text">#FF101828</color>
+    <color name="arcano_muted">#FF667085</color>
+    <color name="arcano_border">#FFE4E7EC</color>
+    <color name="arcano_chip_admin_bg">#FFFCE8EA</color>
+    <color name="arcano_chip_admin_fg">#FFC40812</color>
+    <color name="arcano_chip_desp_bg">#FFE8F1FC</color>
+    <color name="arcano_chip_desp_fg">#FF175CD3</color>
+    <color name="arcano_chip_op_bg">#FFE8F8EF</color>
+    <color name="arcano_chip_op_fg">#FF067647</color>
+    <color name="arcano_nav_inactive">#FF98A2B3</color>
+    <color name="arcano_avatar_bg">#FFFCE8EA</color>
+    <color name="arcano_status_green">#FF067647</color>
+    <color name="arcano_status_green_bg">#FFE8F8EF</color>
+    <color name="arcano_status_inactive">#FFB42318</color>
+    <color name="arcano_status_inactive_bg">#FFFEE4E2</color>
+    <color name="arcano_amber">#FFB54708</color>
+    <color name="arcano_amber_bg">#FFFFFAEB</color>
+    <color name="arcano_mesa_icon_bg">#FFF2F4F7</color>
+</resources>

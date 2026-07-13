@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Arcano Service Wear</string>
+    <string name="login_brand">Arcano Service Wear</string>
+    <string name="login_subtitle">Acceso interno</string>
+    <string name="label_correo">Correo</string>
+    <string name="hint_correo">Ingresa tu correo</string>
+    <string name="label_password">Contraseña</string>
+    <string name="hint_password">Ingresa tu contraseña</string>
+    <string name="btn_login">Iniciar sesión</string>
+    <string name="login_footer">Solo personal autorizado</string>
+    <string name="login_error">Correo o contraseña incorrectos</string>
+    <string name="demo_hint">Demo: admin@arcano.com / admin\ndespacho@arcano.com / despacho\noperador@arcano.com / operador</string>
+
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_ordenes">Órdenes</string>
+    <string name="nav_historial">Historial</string>
+    <string name="nav_cuenta">Cuenta</string>
+    <string name="nav_usuarios">Usuarios</string>
+    <string name="nav_mesas">Mesas</string>
+    <string name="brand_header">ARCANO SERVICE WEAR</string>
+
+    <string name="saludo_format">Hola, %1$s</string>
+    <string name="rol_admin">Administrador</string>
+    <string name="rol_despachador">Despachador</string>
+    <string name="rol_operador">Operador</string>
+
+    <string name="inicio_admin_title">Panel de administración</string>
+    <string name="inicio_admin_desc">Gestiona usuarios, roles, mesas y consulta el historial del salón.</string>
+    <string name="inicio_admin_action_usuarios">Usuarios</string>
+    <string name="inicio_admin_action_mesas">Mesas</string>
+    <string name="inicio_admin_action_ordenes">Órdenes activas</string>
+    <string name="inicio_admin_action_historial">Historial</string>
+
+    <string name="inicio_desp_title">Cola de cocina</string>
+    <string name="inicio_desp_desc">Avanza las órdenes hasta Listo para que el operador las recoja en el reloj.</string>
+    <string name="inicio_desp_action">Ver órdenes activas</string>
+    <string name="inicio_desp_stat">3 en preparación · 2 listas</string>
+
+    <string name="inicio_op_title">Servicio en salón</string>
+    <string name="inicio_op_desc">Registra órdenes, entrega desde el smartwatch y cierra la mesa al cobrar.</string>
+    <string name="inicio_op_action_orden">Registrar orden</string>
+    <string name="inicio_op_action_cobro">Cerrar mesa / Cobro</string>
+    <string name="inicio_op_watch">Smartwatch listo para recolección y entrega</string>
+
+    <string name="titulo_usuarios">Usuarios</string>
+    <string name="btn_nuevo">+ Nuevo</string>
+    <string name="estado_activo">Activo</string>
+    <string name="estado_inactivo">Inactivo</string>
+    <string name="editar">Editar</string>
+    <string name="activar">Activar</string>
+    <string name="desactivar">Desactivar</string>
+    <string name="guardar">Guardar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="titulo_nuevo_usuario">Nuevo usuario</string>
+    <string name="titulo_editar_usuario">Editar usuario</string>
+    <string name="label_nombre">Nombre</string>
+    <string name="hint_nombre">Nombre completo</string>
+    <string name="label_rol">Rol</string>
+    <string name="usuario_guardado">Usuario guardado</string>
+    <string name="usuario_estado_ok">Estado actualizado</string>
+
+    <string name="titulo_mesas">Mesas</string>
+    <string name="btn_nueva_mesa">+ Nueva mesa</string>
+    <string name="mesa_format">Mesa %1$d</string>
+    <string name="mesa_disponible">Disponible</string>
+    <string name="mesa_ocupada">Ocupada</string>
+    <string name="mesa_reservada">Reservada</string>
+    <string name="mesa_tap_hint">Toca para cambiar estado</string>
+    <string name="mesa_agregada">Mesa agregada</string>
+
+    <string name="titulo_ordenes">Órdenes</string>
+    <string name="orden_format">Orden #%1$d</string>
+    <string name="total_label">Total</string>
+    <string name="sin_ordenes_activas">No hay órdenes activas</string>
+
+    <string name="titulo_historial">Historial</string>
+    <string name="hint_buscar_mesa">Buscar por mesa</string>
+    <string name="sin_historial">Sin resultados</string>
+
+    <string name="estado_pendiente">Pendiente</string>
+    <string name="estado_en_preparacion">En preparación</string>
+    <string name="estado_listo">Listo</string>
+    <string name="estado_recogida">Recogida</string>
+    <string name="estado_entregado">Entregado</string>
+    <string name="estado_pagado">Pagado</string>
+    <string name="estado_cancelado">Cancelado</string>
+
+    <string name="precio_format">$%1$.2f</string>
+    <string name="stub_ordenes">Órdenes (próximamente)</string>
+    <string name="stub_historial">Historial (próximamente)</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="cuenta_correo_format">Correo: %1$s</string>
+    <string name="cuenta_rol_format">Rol: %1$s</string>
+    <string name="cuenta_admin_usuarios">Administrar usuarios</string>
+</resources>

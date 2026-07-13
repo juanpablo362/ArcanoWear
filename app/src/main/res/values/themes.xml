@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme.ArcanoWear" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/arcano_red</item>
+        <item name="colorPrimaryVariant">@color/arcano_red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/arcano_green</item>
+        <item name="colorSecondaryVariant">@color/arcano_green</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/arcano_background</item>
+        <item name="android:windowBackground">@color/arcano_background</item>
+        <item name="android:colorBackground">@color/arcano_background</item>
+    </style>
+</resources>

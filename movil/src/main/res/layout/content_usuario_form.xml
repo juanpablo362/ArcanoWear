@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/arcano_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvFormTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/arcano_text"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/label_nombre"
+            android:textColor="@color/arcano_muted"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/hint_nombre"
+            android:inputType="textPersonName"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/arcano_text"
+            android:textColorHint="@color/arcano_nav_inactive"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/label_correo"
+            android:textColor="@color/arcano_muted"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/etCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/hint_correo"
+            android:inputType="textEmailAddress"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/arcano_text"
+            android:textColorHint="@color/arcano_nav_inactive"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/label_password"
+            android:textColor="@color/arcano_muted"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="@color/arcano_text"
+            android:textColorHint="@color/arcano_nav_inactive"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/label_rol"
+            android:textColor="@color/arcano_muted"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spRol"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_input"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <TextView
+            android:id="@+id/btnToggleActivo"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_list_card"
+            android:gravity="center"
+            android:textColor="@color/arcano_text"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button_primary"
+            android:gravity="center"
+            android:text="@string/guardar"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnCancelarForm"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/cancelar"
+            android:textColor="@color/arcano_muted"
+            android:textSize="15sp" />
+    </LinearLayout>
+</ScrollView>

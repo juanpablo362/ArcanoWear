@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Arcano Service Wear</string>
+    <string name="pendientes_title">Pendientes</string>
+    <string name="brand_arcano">ARCANO</string>
+    <string name="brand_service_wear">SERVICE WEAR</string>
+    <string name="brand_service">SERVICE</string>
+    <string name="mesa_format">Mesa %1$d</string>
+    <string name="estado_listo">Listo</string>
+    <string name="estado_recogida">Recogida</string>
+    <string name="confirmar_recoleccion">Confirmar recolección</string>
+    <string name="entregar_pedido">¿Entregar pedido?</string>
+    <string name="confirmar_entrega">Confirmar entrega</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="sin_pendientes">Sin órdenes pendientes</string>
+    <string name="producto_format">%1$dx %2$s</string>
+</resources>
