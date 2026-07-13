@@ -31,21 +31,17 @@
             android:paddingBottom="36dp">
 
             <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
+                android:adjustViewBounds="true"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_logo_a" />
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="3dp"
-                android:layout_marginTop="12dp"
-                android:background="@color/arcano_red" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/arcanologo" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/login_brand"
                 android:textColor="@color/arcano_text"

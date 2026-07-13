@@ -54,10 +54,23 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/btnAdminUsuarios"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_list_card"
+            android:gravity="center"
+            android:text="@string/cuenta_admin_usuarios"
+            android:textColor="@color/arcano_red"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/btnCerrarSesion"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_primary"
             android:gravity="center"
             android:text="@string/cerrar_sesion"

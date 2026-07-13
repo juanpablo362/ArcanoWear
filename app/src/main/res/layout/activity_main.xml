@@ -43,10 +43,19 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="14dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/arcanologo" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="6dp"
             android:letterSpacing="0.15"
             android:text="@string/brand_arcano"
             android:textColor="@color/white"

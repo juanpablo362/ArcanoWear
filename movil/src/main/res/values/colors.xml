@@ -14,4 +14,12 @@
     <color name="arcano_chip_op_bg">#FFE8F8EF</color>
     <color name="arcano_chip_op_fg">#FF067647</color>
     <color name="arcano_nav_inactive">#FF98A2B3</color>
+    <color name="arcano_avatar_bg">#FFFCE8EA</color>
+    <color name="arcano_status_green">#FF067647</color>
+    <color name="arcano_status_green_bg">#FFE8F8EF</color>
+    <color name="arcano_status_inactive">#FFB42318</color>
+    <color name="arcano_status_inactive_bg">#FFFEE4E2</color>
+    <color name="arcano_amber">#FFB54708</color>
+    <color name="arcano_amber_bg">#FFFFFAEB</color>
+    <color name="arcano_mesa_icon_bg">#FFF2F4F7</color>
 </resources>

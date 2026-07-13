@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcanowear.data.MockOrdenesRepository
 
@@ -43,7 +42,6 @@ class DetalleActivity : AppCompatActivity() {
         btnConfirmar.setOnClickListener {
             val ok = MockOrdenesRepository.confirmarRecoleccion(ordenId)
             if (ok) {
-                Toast.makeText(this, R.string.estado_recogida, Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, EntregaActivity::class.java)
                 intent.putExtra(OrdenExtras.ORDEN_ID, ordenId)
                 startActivity(intent)

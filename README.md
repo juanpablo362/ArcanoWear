@@ -26,6 +26,18 @@ Ambos usan el mismo `applicationId`: `com.example.arcanowear` (como en `miHolaWa
 | `despacho@arcano.com` | `despacho` | Despachador |
 | `operador@arcano.com` | `operador` | Operador |
 
+## Pantallas del Administrador (simuladas)
+
+Navegación propia del rol (sin home genérico ni tab de órdenes operativas):
+
+**Usuarios · Mesas · Historial · Cuenta**
+
+- Entra directo a **Usuarios** tras el login  
+- **Usuarios** — listar, crear, editar, activar/desactivar y asignar rol  
+- **Mesas** — listar, agregar y ciclar estado (Disponible / Ocupada / Reservada)  
+- **Historial** — órdenes entregadas/pagadas/canceladas con búsqueda por mesa  
+- **Cuenta** — datos de sesión + cerrar sesión  
+
 ## Flujo simulado del watch
 
 1. Lista de pendientes (`Listo` / `Recogida`).
