@@ -79,10 +79,6 @@ class ShellActivity : AppCompatActivity() {
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_inicio -> {
-                    showInicio()
-                    true
-                }
                 R.id.nav_usuarios -> {
                     showUsuarios()
                     true
@@ -114,15 +110,6 @@ class ShellActivity : AppCompatActivity() {
         bottomNav.selectedItemId = when (rol) {
             Rol.Administrador -> R.id.nav_usuarios
             Rol.Operador, Rol.Despachador -> R.id.nav_ordenes
-        }
-    }
-
-    private fun showInicio() {
-        // Ya no hay home genérico: cada rol entra a su pantalla operativa.
-        when (rol) {
-            Rol.Administrador -> showUsuarios()
-            Rol.Despachador -> showGestionOrdenes()
-            Rol.Operador -> showNuevaOrden()
         }
     }
 
