@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_inicio"
-        android:icon="@drawable/ic_nav_home"
-        android:title="@string/nav_inicio" />
-    <item
         android:id="@+id/nav_ordenes"
         android:icon="@drawable/ic_nav_orders"
-        android:title="@string/nav_ordenes" />
+        android:title="@string/nav_nueva_orden" />
+    <item
+        android:id="@+id/nav_cobrar"
+        android:icon="@drawable/ic_nav_cobrar"
+        android:title="@string/nav_cobrar" />
     <item
         android:id="@+id/nav_historial"
         android:icon="@drawable/ic_nav_history"

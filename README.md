@@ -8,7 +8,7 @@ Por ahora solo hay **diseño y lógica simulada** (sin API real).
 | Módulo | Dispositivo | Descripción |
 |--------|-------------|-------------|
 | `:app` | Smartwatch (Wear OS) | Pendientes → detalle/recolección → entrega |
-| `:movil` | Teléfono | Login, shell con tabs e inicio por rol |
+| `:movil` | Teléfono | Login y pantallas por rol |
 
 Ambos usan el mismo `applicationId`: `com.example.arcanowear` (como en `miHolaWatch`, para asociar phone/watch más adelante).
 
@@ -18,25 +18,40 @@ Ambos usan el mismo `applicationId`: `com.example.arcanowear` (como en `miHolaWa
 2. **Watch:** run configuration `:app` → emulador Wear OS.
 3. **Phone:** run configuration `:movil` → emulador o dispositivo Android.
 
-## Credenciales simuladas (móvil)
+## Login (API real)
 
-| Correo | Contraseña | Rol |
-|--------|------------|-----|
-| `admin@arcano.com` | `admin` | Administrador |
-| `despacho@arcano.com` | `despacho` | Despachador |
-| `operador@arcano.com` | `operador` | Operador |
+El móvil autentica contra:
 
-## Pantallas del Administrador (simuladas)
+`POST https://arcanopizzaapi-ezetgtdugefxcybf.eastus-01.azurewebsites.net/api/Auth/login`
 
-Navegación propia del rol (sin home genérico ni tab de órdenes operativas):
+Body:
 
-**Usuarios · Mesas · Historial · Cuenta**
+```json
+{ "correo": "tu@correo.com", "password": "tuPassword" }
+```
 
-- Entra directo a **Usuarios** tras el login  
-- **Usuarios** — listar, crear, editar, activar/desactivar y asignar rol  
-- **Mesas** — listar, agregar y ciclar estado (Disponible / Ocupada / Reservada)  
-- **Historial** — órdenes entregadas/pagadas/canceladas con búsqueda por mesa  
-- **Cuenta** — datos de sesión + cerrar sesión  
+Usa usuarios reales de la BD (roles **Administrador**, **Despachador** u **Operador**).  
+El token JWT se guarda en memoria (`SessionRepository`); el resto de pantallas sigue **simulado**.
+
+## Pantallas por rol (móvil)
+
+### Administrador — nav: Usuarios · Mesas · Historial · Cuenta
+
+- Entra en **Usuarios**
+- CRUD simulado de usuarios (activar/desactivar, roles)
+- Mesas (agregar / ciclar estado)
+- Historial con búsqueda
+
+### Operador — nav: Nueva · Cobrar · Historial · Cuenta
+
+- Entra en **Nueva orden**
+- **Cobrar** = cerrar mesa / pago
+- Historial
+
+### Despachador — nav: Gestión · Historial · Cuenta
+
+- Entra en **Gestión** (filtros + Avanzar hasta `Listo`)
+- Historial
 
 ## Flujo simulado del watch
 
@@ -46,5 +61,5 @@ Navegación propia del rol (sin home genérico ni tab de órdenes operativas):
 
 ## Notas
 
-- Los tabs Órdenes / Historial del teléfono aún son placeholders.
+- Solo el **login** usa la API; órdenes, mesas, usuarios UI, historial y watch siguen mock.
 - La comunicación phone ↔ watch (Message API) se agregará después.

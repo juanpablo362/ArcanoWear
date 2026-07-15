@@ -46,11 +46,33 @@ enum class EstadoOrdenPhone {
     Cancelado
 }
 
+data class LineaOrden(
+    val cantidad: Int,
+    val nombre: String,
+    val precioUnitario: Double
+) {
+    fun subtotal(): Double = cantidad * precioUnitario
+}
+
+data class ProductoMenu(
+    val id: String,
+    val nombre: String,
+    val precio: Double
+)
+
+enum class MetodoPago {
+    Efectivo,
+    Tarjeta
+}
+
 data class OrdenPhone(
     val id: String,
     val numeroOrden: Int,
     val mesa: Int,
+    val personas: Int,
     val estado: EstadoOrdenPhone,
     val total: Double,
-    val fecha: String
+    val fecha: String,
+    val hora: String,
+    val productos: List<LineaOrden>
 )

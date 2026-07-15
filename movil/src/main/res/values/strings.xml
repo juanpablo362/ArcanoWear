@@ -7,12 +7,17 @@
     <string name="label_password">Contraseña</string>
     <string name="hint_password">Ingresa tu contraseña</string>
     <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_login_loading">Conectando…</string>
     <string name="login_footer">Solo personal autorizado</string>
     <string name="login_error">Correo o contraseña incorrectos</string>
-    <string name="demo_hint">Demo: admin@arcano.com / admin\ndespacho@arcano.com / despacho\noperador@arcano.com / operador</string>
+    <string name="login_campos_obligatorios">Correo y contraseña son obligatorios.</string>
+    <string name="demo_hint">Login real contra la API Arcano Pizza.\nRoles válidos: Administrador, Despachador u Operador.\nEl resto de pantallas sigue simulado.</string>
 
     <string name="nav_inicio">Inicio</string>
     <string name="nav_ordenes">Órdenes</string>
+    <string name="nav_nueva_orden">Nueva</string>
+    <string name="nav_gestion">Gestión</string>
+    <string name="nav_cobrar">Cobrar</string>
     <string name="nav_historial">Historial</string>
     <string name="nav_cuenta">Cuenta</string>
     <string name="nav_usuarios">Usuarios</string>
@@ -92,4 +97,34 @@
     <string name="cuenta_correo_format">Correo: %1$s</string>
     <string name="cuenta_rol_format">Rol: %1$s</string>
     <string name="cuenta_admin_usuarios">Administrar usuarios</string>
+
+    <string name="titulo_nueva_orden">Nueva orden</string>
+    <string name="label_mesa">Mesa</string>
+    <string name="registrar_orden">Registrar orden</string>
+    <string name="total_valor">Total  %1$s</string>
+    <string name="orden_registrada">Orden registrada</string>
+    <string name="elige_mesa_productos">Selecciona mesa y al menos un producto</string>
+    <string name="sin_mesas_disponibles">No hay mesas disponibles</string>
+
+    <string name="titulo_gestion">Gestión de órdenes</string>
+    <string name="filtro_todas">Todas</string>
+    <string name="btn_avanzar">Avanzar</string>
+    <string name="personas_format">%1$d personas</string>
+    <string name="linea_producto_format">%1$dx %2$s</string>
+    <string name="estado_avanzado">Estado actualizado</string>
+    <string name="sin_gestion">No hay órdenes en este filtro</string>
+
+    <string name="titulo_cerrar_mesa">Cerrar mesa</string>
+    <string name="resumen_cuenta">Resumen de cuenta</string>
+    <string name="metodo_pago">Método de pago</string>
+    <string name="pago_efectivo">Efectivo</string>
+    <string name="pago_tarjeta">Tarjeta</string>
+    <string name="confirmar_pago">Confirmar pago y liberar mesa</string>
+    <string name="caption_pago">El cliente finaliza su visita</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_mayus">TOTAL</string>
+    <string name="pago_ok">Pago registrado · mesa liberada</string>
+    <string name="elige_mesa_cobro">Elige una mesa con cuenta pendiente</string>
+    <string name="sin_cuentas">No hay mesas por cobrar</string>
+    <string name="mesa_label_solo">Mesa</string>
 </resources>

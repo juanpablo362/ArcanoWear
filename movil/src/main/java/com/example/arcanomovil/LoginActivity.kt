@@ -8,20 +8,28 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.arcanomovil.data.MockAuthRepository
+import com.example.arcanomovil.data.AuthApiClient
+import com.example.arcanomovil.data.LoginResult
+import com.example.arcanomovil.data.SessionRepository
 
 class LoginActivity : AppCompatActivity() {
 
     private var passwordVisible = false
+    private var cargando = false
+
+    private lateinit var etCorreo: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var tvError: TextView
+    private lateinit var btnLogin: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val etCorreo = findViewById<EditText>(R.id.etCorreo)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val tvError = findViewById<TextView>(R.id.tvError)
-        val btnLogin = findViewById<TextView>(R.id.btnLogin)
+        etCorreo = findViewById(R.id.etCorreo)
+        etPassword = findViewById(R.id.etPassword)
+        tvError = findViewById(R.id.tvError)
+        btnLogin = findViewById(R.id.btnLogin)
         val btnTogglePassword = findViewById<ImageView>(R.id.btnTogglePassword)
 
         btnTogglePassword.setOnClickListener {
@@ -35,23 +43,55 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-            val usuario = MockAuthRepository.login(
-                etCorreo.text.toString(),
-                etPassword.text.toString()
-            )
-            if (usuario == null) {
-                tvError.visibility = View.VISIBLE
-                return@setOnClickListener
-            }
-
-            tvError.visibility = View.GONE
-            val intent = Intent(this, ShellActivity::class.java).apply {
-                putExtra(SessionExtras.NOMBRE, usuario.nombre)
-                putExtra(SessionExtras.CORREO, usuario.correo)
-                putExtra(SessionExtras.ROL, usuario.rol.name)
-            }
-            startActivity(intent)
-            finish()
+            intentarLogin()
         }
+    }
+
+    private fun intentarLogin() {
+        if (cargando) return
+
+        val correo = etCorreo.text.toString()
+        val password = etPassword.text.toString()
+        if (correo.isBlank() || password.isBlank()) {
+            mostrarError(getString(R.string.login_campos_obligatorios))
+            return
+        }
+
+        setCargando(true)
+        AuthApiClient.loginAsync(correo, password) { result ->
+            runOnUiThread {
+                setCargando(false)
+                when (result) {
+                    is LoginResult.Ok -> {
+                        SessionRepository.guardar(result.sesion)
+                        val usuario = result.sesion.usuario
+                        startActivity(
+                            Intent(this, ShellActivity::class.java).apply {
+                                putExtra(SessionExtras.NOMBRE, usuario.nombre)
+                                putExtra(SessionExtras.CORREO, usuario.correo)
+                                putExtra(SessionExtras.ROL, usuario.rol.name)
+                            }
+                        )
+                        finish()
+                    }
+                    is LoginResult.Error -> mostrarError(result.mensaje)
+                }
+            }
+        }
+    }
+
+    private fun setCargando(activo: Boolean) {
+        cargando = activo
+        btnLogin.isEnabled = !activo
+        btnLogin.alpha = if (activo) 0.6f else 1f
+        btnLogin.text = getString(
+            if (activo) R.string.btn_login_loading else R.string.btn_login
+        )
+        if (activo) tvError.visibility = View.GONE
+    }
+
+    private fun mostrarError(mensaje: String) {
+        tvError.text = mensaje
+        tvError.visibility = View.VISIBLE
     }
 }

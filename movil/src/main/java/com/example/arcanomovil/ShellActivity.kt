@@ -17,12 +17,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.arcanomovil.data.EstadoMesa
 import com.example.arcanomovil.data.EstadoOrdenPhone
-import com.example.arcanomovil.data.MockAuthRepository
+import com.example.arcanomovil.data.LineaOrden
+import com.example.arcanomovil.data.MetodoPago
 import com.example.arcanomovil.data.MockMesasRepository
 import com.example.arcanomovil.data.MockOrdenesRepository
+import com.example.arcanomovil.data.MockProductosRepository
 import com.example.arcanomovil.data.MockUsuariosRepository
 import com.example.arcanomovil.data.OrdenPhone
+import com.example.arcanomovil.data.ProductoMenu
 import com.example.arcanomovil.data.Rol
+import com.example.arcanomovil.data.SessionRepository
 import com.example.arcanomovil.data.Usuario
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -36,6 +40,11 @@ class ShellActivity : AppCompatActivity() {
     private lateinit var rol: Rol
 
     private var editingUserId: String? = null
+    private var filtroGestion: EstadoOrdenPhone? = null
+    private var mesaSeleccionadaOrden: Int? = null
+    private val cantidadesMenu = mutableMapOf<String, Int>()
+    private var mesaCobro: Int? = null
+    private var metodoPago: MetodoPago = MetodoPago.Tarjeta
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +62,19 @@ class ShellActivity : AppCompatActivity() {
         contentContainer = findViewById(R.id.contentContainer)
         bottomNav = findViewById(R.id.bottomNav)
 
-        if (rol == Rol.Administrador) {
-            bottomNav.menu.clear()
-            bottomNav.inflateMenu(R.menu.menu_bottom_nav_admin)
+        when (rol) {
+            Rol.Administrador -> {
+                bottomNav.menu.clear()
+                bottomNav.inflateMenu(R.menu.menu_bottom_nav_admin)
+            }
+            Rol.Operador -> {
+                bottomNav.menu.clear()
+                bottomNav.inflateMenu(R.menu.menu_bottom_nav_operador)
+            }
+            Rol.Despachador -> {
+                bottomNav.menu.clear()
+                bottomNav.inflateMenu(R.menu.menu_bottom_nav_despachador)
+            }
         }
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -73,12 +92,15 @@ class ShellActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_ordenes -> {
-                    showStub(getString(R.string.stub_ordenes), textoOrdenesPorRol())
+                    showOrdenesPorRol()
+                    true
+                }
+                R.id.nav_cobrar -> {
+                    showCierreMesa()
                     true
                 }
                 R.id.nav_historial -> {
-                    if (rol == Rol.Administrador) showHistorial()
-                    else showStub(getString(R.string.stub_historial), "Consulta de órdenes procesadas (simulado).")
+                    showHistorial()
                     true
                 }
                 R.id.nav_cuenta -> {
@@ -89,82 +111,19 @@ class ShellActivity : AppCompatActivity() {
             }
         }
 
-        bottomNav.selectedItemId = if (rol == Rol.Administrador) {
-            R.id.nav_usuarios
-        } else {
-            R.id.nav_inicio
+        bottomNav.selectedItemId = when (rol) {
+            Rol.Administrador -> R.id.nav_usuarios
+            Rol.Operador, Rol.Despachador -> R.id.nav_ordenes
         }
-    }
-
-    private fun textoOrdenesPorRol(): String = when (rol) {
-        Rol.Administrador -> "Vista general de órdenes del salón."
-        Rol.Despachador -> "Aquí gestionarás la cola hasta Listo."
-        Rol.Operador -> "Aquí registrarás nuevas órdenes de mesa."
     }
 
     private fun showInicio() {
-        if (rol == Rol.Administrador) {
-            showUsuarios()
-            return
-        }
-
-        contentContainer.removeAllViews()
-        val view = layoutInflater.inflate(R.layout.content_inicio, contentContainer, false)
-
-        val tvSaludo = view.findViewById<TextView>(R.id.tvSaludo)
-        val tvRolChip = view.findViewById<TextView>(R.id.tvRolChip)
-        val tvTitulo = view.findViewById<TextView>(R.id.tvInicioTitulo)
-        val tvDesc = view.findViewById<TextView>(R.id.tvInicioDesc)
-        val tvExtra = view.findViewById<TextView>(R.id.tvInicioExtra)
-        val acciones = view.findViewById<LinearLayout>(R.id.accionesContainer)
-
-        tvSaludo.text = getString(R.string.saludo_format, nombre.split(" ").first())
-
+        // Ya no hay home genérico: cada rol entra a su pantalla operativa.
         when (rol) {
-            Rol.Administrador -> Unit
-            Rol.Despachador -> {
-                tvRolChip.text = getString(R.string.rol_despachador)
-                tvRolChip.setTextColor(ContextCompat.getColor(this, R.color.arcano_chip_desp_fg))
-                tvRolChip.setBackgroundResource(R.drawable.bg_chip_desp)
-                tvTitulo.text = getString(R.string.inicio_desp_title)
-                tvDesc.text = getString(R.string.inicio_desp_desc)
-                tvExtra.visibility = View.VISIBLE
-                tvExtra.text = getString(R.string.inicio_desp_stat)
-                addAccion(acciones, getString(R.string.inicio_desp_action)) {
-                    bottomNav.selectedItemId = R.id.nav_ordenes
-                }
-            }
-            Rol.Operador -> {
-                tvRolChip.text = getString(R.string.rol_operador)
-                tvRolChip.setTextColor(ContextCompat.getColor(this, R.color.arcano_chip_op_fg))
-                tvRolChip.setBackgroundResource(R.drawable.bg_chip_op)
-                tvTitulo.text = getString(R.string.inicio_op_title)
-                tvDesc.text = getString(R.string.inicio_op_desc)
-                tvExtra.visibility = View.VISIBLE
-                tvExtra.text = getString(R.string.inicio_op_watch)
-                addAccion(acciones, getString(R.string.inicio_op_action_orden)) {
-                    bottomNav.selectedItemId = R.id.nav_ordenes
-                }
-                addAccion(acciones, getString(R.string.inicio_op_action_cobro))
-            }
+            Rol.Administrador -> showUsuarios()
+            Rol.Despachador -> showGestionOrdenes()
+            Rol.Operador -> showNuevaOrden()
         }
-
-        contentContainer.addView(view)
-    }
-
-    private fun addAccion(
-        container: LinearLayout,
-        texto: String,
-        onClick: (() -> Unit)? = null
-    ) {
-        val btn = LayoutInflater.from(this)
-            .inflate(R.layout.item_accion_inicio, container, false) as TextView
-        btn.text = texto
-        btn.setOnClickListener {
-            if (onClick != null) onClick()
-            else Toast.makeText(this, "$texto (simulado)", Toast.LENGTH_SHORT).show()
-        }
-        container.addView(btn)
     }
 
     private fun bindHeader(root: View, title: String, actionText: String? = null, onAction: (() -> Unit)? = null) {
@@ -357,21 +316,314 @@ class ShellActivity : AppCompatActivity() {
         contentContainer.addView(view)
     }
 
-    private fun showOrdenes() {
-        contentContainer.removeAllViews()
-        val view = layoutInflater.inflate(R.layout.content_ordenes, contentContainer, false)
-        bindHeader(view, getString(R.string.titulo_ordenes))
+    private fun showOrdenesPorRol() {
+        when (rol) {
+            Rol.Operador -> showNuevaOrden()
+            Rol.Despachador -> showGestionOrdenes()
+            Rol.Administrador -> showHistorial()
+        }
+    }
 
-        val lista = view.findViewById<LinearLayout>(R.id.listaOrdenes)
-        val vacio = view.findViewById<TextView>(R.id.tvVacio)
-        val activas = MockOrdenesRepository.activas()
-        if (activas.isEmpty()) {
-            vacio.visibility = View.VISIBLE
+    private fun showNuevaOrden() {
+        contentContainer.removeAllViews()
+        val view = layoutInflater.inflate(R.layout.content_nueva_orden, contentContainer, false)
+        val chips = view.findViewById<LinearLayout>(R.id.listaMesasChips)
+        val tvSinMesas = view.findViewById<TextView>(R.id.tvSinMesas)
+        val listaProductos = view.findViewById<LinearLayout>(R.id.listaProductosMenu)
+        val tvTotal = view.findViewById<TextView>(R.id.tvTotalOrden)
+        val btnRegistrar = view.findViewById<TextView>(R.id.btnRegistrarOrden)
+
+        val disponibles = MockMesasRepository.disponibles()
+        if (disponibles.isEmpty()) {
+            tvSinMesas.visibility = View.VISIBLE
+            mesaSeleccionadaOrden = null
         } else {
-            vacio.visibility = View.GONE
-            for (orden in activas) {
-                lista.addView(buildOrdenItem(orden, lista))
+            tvSinMesas.visibility = View.GONE
+            if (mesaSeleccionadaOrden == null || disponibles.none { it.numero == mesaSeleccionadaOrden }) {
+                mesaSeleccionadaOrden = disponibles.first().numero
             }
+        }
+
+        fun pintarChips() {
+            chips.removeAllViews()
+            for (mesa in disponibles) {
+                val chip = layoutInflater.inflate(R.layout.item_mesa_chip, chips, false) as TextView
+                chip.text = getString(R.string.mesa_format, mesa.numero)
+                val selected = mesa.numero == mesaSeleccionadaOrden
+                chip.setBackgroundResource(
+                    if (selected) R.drawable.bg_chip_mesa_selected else R.drawable.bg_chip_mesa
+                )
+                chip.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        if (selected) R.color.arcano_red else R.color.arcano_text
+                    )
+                )
+                chip.setOnClickListener {
+                    mesaSeleccionadaOrden = mesa.numero
+                    pintarChips()
+                }
+                chips.addView(chip)
+            }
+        }
+        pintarChips()
+
+        fun actualizarTotal() {
+            val total = MockProductosRepository.menu().sumOf { p ->
+                (cantidadesMenu[p.id] ?: 0) * p.precio
+            }
+            tvTotal.text = getString(R.string.total_valor, getString(R.string.precio_format, total))
+        }
+
+        fun renderProductos() {
+            listaProductos.removeAllViews()
+            for (producto in MockProductosRepository.menu()) {
+                listaProductos.addView(buildProductoMenuItem(producto, listaProductos) { actualizarTotal() })
+            }
+            actualizarTotal()
+        }
+        renderProductos()
+
+        btnRegistrar.setOnClickListener {
+            val mesa = mesaSeleccionadaOrden
+            val lineas = MockProductosRepository.menu().mapNotNull { p ->
+                val qty = cantidadesMenu[p.id] ?: 0
+                if (qty > 0) LineaOrden(qty, p.nombre, p.precio) else null
+            }
+            if (mesa == null || lineas.isEmpty()) {
+                Toast.makeText(this, R.string.elige_mesa_productos, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            MockOrdenesRepository.registrar(mesa, 2, lineas)
+            cantidadesMenu.clear()
+            mesaSeleccionadaOrden = null
+            Toast.makeText(this, R.string.orden_registrada, Toast.LENGTH_SHORT).show()
+            showNuevaOrden()
+        }
+
+        contentContainer.addView(view)
+    }
+
+    private fun buildProductoMenuItem(
+        producto: ProductoMenu,
+        parent: LinearLayout,
+        onChange: () -> Unit
+    ): View {
+        val item = layoutInflater.inflate(R.layout.item_producto_menu, parent, false)
+        item.findViewById<TextView>(R.id.tvNombreProducto).text = producto.nombre
+        item.findViewById<TextView>(R.id.tvPrecioProducto).text =
+            getString(R.string.precio_format, producto.precio)
+        val tvCantidad = item.findViewById<TextView>(R.id.tvCantidad)
+        fun sync() {
+            tvCantidad.text = (cantidadesMenu[producto.id] ?: 0).toString()
+        }
+        sync()
+        item.findViewById<TextView>(R.id.btnMas).setOnClickListener {
+            cantidadesMenu[producto.id] = (cantidadesMenu[producto.id] ?: 0) + 1
+            sync()
+            onChange()
+        }
+        item.findViewById<TextView>(R.id.btnMenos).setOnClickListener {
+            val actual = cantidadesMenu[producto.id] ?: 0
+            cantidadesMenu[producto.id] = (actual - 1).coerceAtLeast(0)
+            sync()
+            onChange()
+        }
+        return item
+    }
+
+    private fun showGestionOrdenes() {
+        contentContainer.removeAllViews()
+        val view = layoutInflater.inflate(R.layout.content_gestion_ordenes, contentContainer, false)
+        val filtros = view.findViewById<LinearLayout>(R.id.filtrosEstado)
+        val lista = view.findViewById<LinearLayout>(R.id.listaGestion)
+        val vacio = view.findViewById<TextView>(R.id.tvVacioGestion)
+
+        data class FiltroUi(val label: String, val estado: EstadoOrdenPhone?)
+        val opciones = listOf(
+            FiltroUi(getString(R.string.filtro_todas), null),
+            FiltroUi(getString(R.string.estado_pendiente), EstadoOrdenPhone.Pendiente),
+            FiltroUi(getString(R.string.estado_en_preparacion), EstadoOrdenPhone.EnPreparacion),
+            FiltroUi(getString(R.string.estado_listo), EstadoOrdenPhone.Listo)
+        )
+
+        fun pintarFiltros() {
+            filtros.removeAllViews()
+            for (op in opciones) {
+                val chip = layoutInflater.inflate(R.layout.item_filtro_chip, filtros, false) as TextView
+                chip.text = op.label
+                val active = filtroGestion == op.estado
+                chip.setBackgroundResource(
+                    if (active) R.drawable.bg_filter_active else R.drawable.bg_filter_inactive
+                )
+                chip.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        if (active) R.color.white else R.color.arcano_muted
+                    )
+                )
+                chip.setOnClickListener {
+                    filtroGestion = op.estado
+                    showGestionOrdenes()
+                }
+                filtros.addView(chip)
+            }
+        }
+
+        fun pintarLista() {
+            lista.removeAllViews()
+            val items = MockOrdenesRepository.gestionDespacho(filtroGestion)
+            vacio.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            for (orden in items) {
+                lista.addView(buildGestionItem(orden, lista))
+            }
+        }
+
+        pintarFiltros()
+        pintarLista()
+        contentContainer.addView(view)
+    }
+
+    private fun buildGestionItem(orden: OrdenPhone, parent: LinearLayout): View {
+        val item = layoutInflater.inflate(R.layout.item_orden_gestion, parent, false)
+        item.findViewById<TextView>(R.id.tvMesaNum).text = orden.mesa.toString()
+        item.findViewById<TextView>(R.id.tvMesaTitulo).text =
+            getString(R.string.mesa_format, orden.mesa)
+        item.findViewById<TextView>(R.id.tvPersonas).text =
+            getString(R.string.personas_format, orden.personas)
+        item.findViewById<TextView>(R.id.tvHora).text = orden.hora
+        item.findViewById<TextView>(R.id.tvProductos).text =
+            orden.productos.joinToString("\n") {
+                getString(R.string.linea_producto_format, it.cantidad, it.nombre)
+            }
+
+        val tvEstado = item.findViewById<TextView>(R.id.tvEstado)
+        bindEstadoOrden(tvEstado, orden.estado)
+
+        val btnAvanzar = item.findViewById<TextView>(R.id.btnAvanzar)
+        val puedeAvanzar = orden.estado == EstadoOrdenPhone.Pendiente ||
+            orden.estado == EstadoOrdenPhone.EnPreparacion
+        btnAvanzar.visibility = if (puedeAvanzar) View.VISIBLE else View.GONE
+        btnAvanzar.setOnClickListener {
+            if (MockOrdenesRepository.avanceEstado(orden.id)) {
+                Toast.makeText(this, R.string.estado_avanzado, Toast.LENGTH_SHORT).show()
+                showGestionOrdenes()
+            }
+        }
+        return item
+    }
+
+    private fun showCierreMesa() {
+        contentContainer.removeAllViews()
+        val view = layoutInflater.inflate(R.layout.content_cierre_mesa, contentContainer, false)
+        val chips = view.findViewById<LinearLayout>(R.id.listaMesasCobro)
+        val tvSin = view.findViewById<TextView>(R.id.tvSinCuentas)
+        val bloque = view.findViewById<LinearLayout>(R.id.bloqueResumen)
+        val tvMesaGrande = view.findViewById<TextView>(R.id.tvMesaGrande)
+        val listaLineas = view.findViewById<LinearLayout>(R.id.listaLineasCuenta)
+        val tvSubtotal = view.findViewById<TextView>(R.id.tvSubtotal)
+        val tvTotal = view.findViewById<TextView>(R.id.tvTotalCuenta)
+        val btnEfectivo = view.findViewById<TextView>(R.id.btnEfectivo)
+        val btnTarjeta = view.findViewById<TextView>(R.id.btnTarjeta)
+        val btnConfirmar = view.findViewById<TextView>(R.id.btnConfirmarPago)
+
+        val mesas = MockOrdenesRepository.mesasConCuentaPendiente()
+        if (mesas.isEmpty()) {
+            tvSin.visibility = View.VISIBLE
+            bloque.visibility = View.GONE
+            mesaCobro = null
+        } else {
+            tvSin.visibility = View.GONE
+            if (mesaCobro == null || mesaCobro !in mesas) {
+                mesaCobro = mesas.first()
+            }
+        }
+
+        fun pintarMetodo() {
+            val efectivo = metodoPago == MetodoPago.Efectivo
+            btnEfectivo.setBackgroundResource(
+                if (efectivo) R.drawable.bg_chip_mesa_selected else R.drawable.bg_chip_mesa
+            )
+            btnTarjeta.setBackgroundResource(
+                if (!efectivo) R.drawable.bg_chip_mesa_selected else R.drawable.bg_chip_mesa
+            )
+            btnEfectivo.setTextColor(
+                ContextCompat.getColor(this, if (efectivo) R.color.arcano_text else R.color.arcano_muted)
+            )
+            btnTarjeta.setTextColor(
+                ContextCompat.getColor(this, if (!efectivo) R.color.arcano_text else R.color.arcano_muted)
+            )
+        }
+
+        fun pintarResumen() {
+            val mesa = mesaCobro ?: return
+            bloque.visibility = View.VISIBLE
+            tvMesaGrande.text = mesa.toString()
+            listaLineas.removeAllViews()
+            val ordenes = MockOrdenesRepository.cuentaMesa(mesa)
+            val lineas = ordenes.flatMap { it.productos }
+            for (linea in lineas) {
+                val row = layoutInflater.inflate(R.layout.item_linea_cuenta, listaLineas, false)
+                row.findViewById<TextView>(R.id.tvLinea).text =
+                    getString(R.string.linea_producto_format, linea.cantidad, linea.nombre)
+                row.findViewById<TextView>(R.id.tvLineaPrecio).text =
+                    getString(R.string.precio_format, linea.subtotal())
+                listaLineas.addView(row)
+            }
+            val total = lineas.sumOf { it.subtotal() }
+            tvSubtotal.text = getString(R.string.precio_format, total)
+            tvTotal.text = getString(R.string.precio_format, total)
+        }
+
+        fun pintarChips() {
+            chips.removeAllViews()
+            for (mesa in mesas) {
+                val chip = layoutInflater.inflate(R.layout.item_mesa_chip, chips, false) as TextView
+                chip.text = getString(R.string.mesa_format, mesa)
+                val selected = mesa == mesaCobro
+                chip.setBackgroundResource(
+                    if (selected) R.drawable.bg_chip_mesa_selected else R.drawable.bg_chip_mesa
+                )
+                chip.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        if (selected) R.color.arcano_red else R.color.arcano_text
+                    )
+                )
+                chip.setOnClickListener {
+                    mesaCobro = mesa
+                    pintarChips()
+                    pintarResumen()
+                }
+                chips.addView(chip)
+            }
+        }
+
+        btnEfectivo.setOnClickListener {
+            metodoPago = MetodoPago.Efectivo
+            pintarMetodo()
+        }
+        btnTarjeta.setOnClickListener {
+            metodoPago = MetodoPago.Tarjeta
+            pintarMetodo()
+        }
+        btnConfirmar.setOnClickListener {
+            val mesa = mesaCobro
+            if (mesa == null) {
+                Toast.makeText(this, R.string.elige_mesa_cobro, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (MockOrdenesRepository.confirmarPagoMesa(mesa, metodoPago)) {
+                Toast.makeText(this, R.string.pago_ok, Toast.LENGTH_SHORT).show()
+                mesaCobro = null
+                showCierreMesa()
+            }
+        }
+
+        pintarChips()
+        if (mesaCobro != null) {
+            pintarResumen()
+            pintarMetodo()
         }
         contentContainer.addView(view)
     }
@@ -481,7 +733,7 @@ class ShellActivity : AppCompatActivity() {
         btnAdminUsuarios.visibility = View.GONE
 
         view.findViewById<TextView>(R.id.btnCerrarSesion).setOnClickListener {
-            MockAuthRepository.logout()
+            SessionRepository.logout()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
