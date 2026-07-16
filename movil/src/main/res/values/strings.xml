@@ -63,6 +63,11 @@
     <string name="label_rol">Rol</string>
     <string name="usuario_guardado">Usuario guardado</string>
     <string name="usuario_estado_ok">Estado actualizado</string>
+    <string name="cargando_usuarios">Cargando usuarios…</string>
+    <string name="sin_usuarios">No hay usuarios</string>
+    <string name="hint_password_opcional">Dejar vacío para no cambiar</string>
+    <string name="completa_nombre_correo">Completa nombre y correo</string>
+    <string name="password_minima">La contraseña debe tener al menos 4 caracteres</string>
 
     <string name="titulo_mesas">Mesas</string>
     <string name="btn_nueva_mesa">+ Nueva mesa</string>

@@ -31,7 +31,16 @@ Body:
 ```
 
 Usa usuarios reales de la BD (roles **Administrador**, **Despachador** u **Operador**).  
-El token JWT se guarda en memoria (`SessionRepository`); el resto de pantallas sigue **simulado**.
+El token JWT se guarda en memoria (`SessionRepository`).
+
+### Admin usuarios (API real)
+
+- Listar: `GET /api/admin/usuarios`
+- Crear: `POST /api/admin/usuarios` (`nombre`, `email`, `tipo`, `password`)
+- Editar: `PUT /api/admin/usuarios/{id}`
+- Activar/desactivar: `PATCH /api/admin/usuarios/{id}/toggle`
+
+Mesas, órdenes, historial y watch siguen **simulados**.
 
 ## Pantallas por rol (móvil)
 
@@ -61,5 +70,5 @@ El token JWT se guarda en memoria (`SessionRepository`); el resto de pantallas s
 
 ## Notas
 
-- Solo el **login** usa la API; órdenes, mesas, usuarios UI, historial y watch siguen mock.
+- Solo **login** y **usuarios (admin)** usan la API; mesas, órdenes, historial y watch siguen mock.
 - La comunicación phone ↔ watch (Message API) se agregará después.

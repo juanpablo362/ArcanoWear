@@ -15,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.arcanomovil.data.AdminUsuariosApiClient
+import com.example.arcanomovil.data.ApiResult
 import com.example.arcanomovil.data.EstadoMesa
 import com.example.arcanomovil.data.EstadoOrdenPhone
 import com.example.arcanomovil.data.LineaOrden
@@ -22,12 +24,12 @@ import com.example.arcanomovil.data.MetodoPago
 import com.example.arcanomovil.data.MockMesasRepository
 import com.example.arcanomovil.data.MockOrdenesRepository
 import com.example.arcanomovil.data.MockProductosRepository
-import com.example.arcanomovil.data.MockUsuariosRepository
 import com.example.arcanomovil.data.OrdenPhone
 import com.example.arcanomovil.data.ProductoMenu
 import com.example.arcanomovil.data.Rol
 import com.example.arcanomovil.data.SessionRepository
 import com.example.arcanomovil.data.Usuario
+import com.example.arcanomovil.data.UsuarioAdminApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ShellActivity : AppCompatActivity() {
@@ -40,6 +42,7 @@ class ShellActivity : AppCompatActivity() {
     private lateinit var rol: Rol
 
     private var editingUserId: String? = null
+    private var usuariosAdminCache: List<UsuarioAdminApi> = emptyList()
     private var filtroGestion: EstadoOrdenPhone? = null
     private var mesaSeleccionadaOrden: Int? = null
     private val cantidadesMenu = mutableMapOf<String, Int>()
@@ -134,34 +137,72 @@ class ShellActivity : AppCompatActivity() {
         }
 
         val lista = view.findViewById<LinearLayout>(R.id.listaUsuarios)
-        for (usuario in MockUsuariosRepository.todos()) {
-            lista.addView(buildUsuarioItem(usuario))
+        val loading = TextView(this).apply {
+            text = getString(R.string.cargando_usuarios)
+            setTextColor(ContextCompat.getColor(this@ShellActivity, R.color.arcano_muted))
+            textSize = 14f
+            setPadding(8, 24, 8, 24)
         }
+        lista.addView(loading)
         contentContainer.addView(view)
+
+        AdminUsuariosApiClient.listarAsync { result ->
+            runOnUiThread {
+                lista.removeAllViews()
+                when (result) {
+                    is ApiResult.Ok -> {
+                        usuariosAdminCache = result.data
+                        if (result.data.isEmpty()) {
+                            lista.addView(TextView(this).apply {
+                                text = getString(R.string.sin_usuarios)
+                                setTextColor(ContextCompat.getColor(this@ShellActivity, R.color.arcano_muted))
+                            })
+                        } else {
+                            for (usuario in result.data) {
+                                lista.addView(buildUsuarioItem(usuario))
+                            }
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        Toast.makeText(this, result.mensaje, Toast.LENGTH_LONG).show()
+                        lista.addView(TextView(this).apply {
+                            text = result.mensaje
+                            setTextColor(ContextCompat.getColor(this@ShellActivity, R.color.arcano_red))
+                        })
+                    }
+                }
+            }
+        }
     }
 
-    private fun buildUsuarioItem(usuario: Usuario): View {
+    private fun buildUsuarioItem(usuarioApi: UsuarioAdminApi): View {
+        val usuario = usuarioApi.aUsuarioLocal()
         val item = layoutInflater.inflate(R.layout.item_usuario, contentContainer, false)
         item.findViewById<TextView>(R.id.tvAvatar).text = usuario.iniciales()
         item.findViewById<TextView>(R.id.tvNombre).text = usuario.nombre
         item.findViewById<TextView>(R.id.tvCorreo).text = usuario.correo
 
         val tvRol = item.findViewById<TextView>(R.id.tvRol)
-        when (usuario.rol) {
-            Rol.Administrador -> {
+        when (usuarioApi.tipo.trim().lowercase()) {
+            "administrador" -> {
                 tvRol.text = getString(R.string.rol_admin)
                 tvRol.setTextColor(ContextCompat.getColor(this, R.color.arcano_chip_admin_fg))
                 tvRol.setBackgroundResource(R.drawable.bg_chip_admin)
             }
-            Rol.Despachador -> {
+            "despachador" -> {
                 tvRol.text = getString(R.string.rol_despachador)
                 tvRol.setTextColor(ContextCompat.getColor(this, R.color.arcano_chip_desp_fg))
                 tvRol.setBackgroundResource(R.drawable.bg_chip_desp)
             }
-            Rol.Operador -> {
+            "operador" -> {
                 tvRol.text = getString(R.string.rol_operador)
                 tvRol.setTextColor(ContextCompat.getColor(this, R.color.arcano_chip_op_fg))
                 tvRol.setBackgroundResource(R.drawable.bg_chip_op)
+            }
+            else -> {
+                tvRol.text = usuarioApi.tipo
+                tvRol.setTextColor(ContextCompat.getColor(this, R.color.arcano_muted))
+                tvRol.setBackgroundResource(R.drawable.bg_chip_desp)
             }
         }
 
@@ -178,7 +219,7 @@ class ShellActivity : AppCompatActivity() {
         }
 
         item.findViewById<TextView>(R.id.btnEditar).setOnClickListener {
-            showUsuarioForm(usuario.id)
+            showUsuarioForm(usuarioApi.id.toString())
         }
         return item
     }
@@ -197,24 +238,28 @@ class ShellActivity : AppCompatActivity() {
         val btnGuardar = view.findViewById<TextView>(R.id.btnGuardar)
         val btnCancelar = view.findViewById<TextView>(R.id.btnCancelarForm)
 
-        val roles = listOf(
+        val rolesApi = listOf("Administrador", "Despachador", "Operador")
+        val rolesLabel = listOf(
             getString(R.string.rol_admin),
             getString(R.string.rol_despachador),
             getString(R.string.rol_operador)
         )
-        spRol.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, roles)
+        spRol.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, rolesLabel)
 
-        val existente = userId?.let { MockUsuariosRepository.getById(it) }
+        val existente = userId?.toIntOrNull()?.let { id ->
+            usuariosAdminCache.find { it.id == id }
+        }
+
         if (existente != null) {
             tvTitulo.text = getString(R.string.titulo_editar_usuario)
             etNombre.setText(existente.nombre)
-            etCorreo.setText(existente.correo)
-            etPassword.setText(existente.password)
+            etCorreo.setText(existente.email)
+            etPassword.hint = getString(R.string.hint_password_opcional)
             spRol.setSelection(
-                when (existente.rol) {
-                    Rol.Administrador -> 0
-                    Rol.Despachador -> 1
-                    Rol.Operador -> 2
+                when (existente.tipo.trim().lowercase()) {
+                    "administrador" -> 0
+                    "despachador" -> 1
+                    else -> 2
                 }
             )
             btnToggle.visibility = View.VISIBLE
@@ -224,9 +269,19 @@ class ShellActivity : AppCompatActivity() {
                 getString(R.string.activar)
             }
             btnToggle.setOnClickListener {
-                MockUsuariosRepository.toggleActivo(existente.id)
-                Toast.makeText(this, R.string.usuario_estado_ok, Toast.LENGTH_SHORT).show()
-                showUsuarios()
+                btnToggle.isEnabled = false
+                AdminUsuariosApiClient.toggleAsync(existente.id) { result ->
+                    runOnUiThread {
+                        btnToggle.isEnabled = true
+                        when (result) {
+                            is ApiResult.Ok -> {
+                                Toast.makeText(this, R.string.usuario_estado_ok, Toast.LENGTH_SHORT).show()
+                                showUsuarios()
+                            }
+                            is ApiResult.Error -> Toast.makeText(this, result.mensaje, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
         } else {
             tvTitulo.text = getString(R.string.titulo_nuevo_usuario)
@@ -236,26 +291,56 @@ class ShellActivity : AppCompatActivity() {
             val nombreVal = etNombre.text.toString().trim()
             val correoVal = etCorreo.text.toString().trim()
             val passVal = etPassword.text.toString()
-            if (nombreVal.isEmpty() || correoVal.isEmpty() || passVal.isEmpty()) {
-                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+            val tipo = rolesApi.getOrElse(spRol.selectedItemPosition) { "Operador" }
+
+            if (nombreVal.isEmpty() || correoVal.isEmpty()) {
+                Toast.makeText(this, R.string.completa_nombre_correo, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val rolSel = when (spRol.selectedItemPosition) {
-                0 -> Rol.Administrador
-                1 -> Rol.Despachador
-                else -> Rol.Operador
+            if (existente == null && passVal.length < 4) {
+                Toast.makeText(this, R.string.password_minima, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            val usuario = Usuario(
-                id = existente?.id ?: MockUsuariosRepository.nextId(),
-                nombre = nombreVal,
-                correo = correoVal,
-                password = passVal,
-                rol = rolSel,
-                activo = existente?.activo ?: true
-            )
-            MockUsuariosRepository.guardar(usuario)
-            Toast.makeText(this, R.string.usuario_guardado, Toast.LENGTH_SHORT).show()
-            showUsuarios()
+            if (existente != null && passVal.isNotEmpty() && passVal.length < 4) {
+                Toast.makeText(this, R.string.password_minima, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            btnGuardar.isEnabled = false
+            if (existente == null) {
+                AdminUsuariosApiClient.crearAsync(nombreVal, correoVal, passVal, tipo) { result ->
+                    runOnUiThread {
+                        btnGuardar.isEnabled = true
+                        when (result) {
+                            is ApiResult.Ok -> {
+                                Toast.makeText(this, R.string.usuario_guardado, Toast.LENGTH_SHORT).show()
+                                showUsuarios()
+                            }
+                            is ApiResult.Error -> Toast.makeText(this, result.mensaje, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            } else {
+                AdminUsuariosApiClient.actualizarAsync(
+                    id = existente.id,
+                    nombre = nombreVal,
+                    email = correoVal,
+                    tipo = tipo,
+                    activo = existente.activo,
+                    password = passVal.ifBlank { null }
+                ) { result ->
+                    runOnUiThread {
+                        btnGuardar.isEnabled = true
+                        when (result) {
+                            is ApiResult.Ok -> {
+                                Toast.makeText(this, R.string.usuario_guardado, Toast.LENGTH_SHORT).show()
+                                showUsuarios()
+                            }
+                            is ApiResult.Error -> Toast.makeText(this, result.mensaje, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
         }
 
         btnCancelar.setOnClickListener { showUsuarios() }
